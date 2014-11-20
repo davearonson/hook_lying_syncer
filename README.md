@@ -33,11 +33,12 @@ a match.
   will try that larer.  If you need to affect _extant_ instances, you have to
   wrap them yourself.
 
-* The lambda must return an Array (or at least _something_ that responds to
-  #any?) if the method name is one you're interested in, and either an empty
-  Array or something falsey (i.e., false or nil) otherwise.  If you are not
-  comfortable making lambdas, feel free to copy the lambda_maker method in the
-  tests.
+* The lambda must return an Array with some truthy content (or at least
+  _something_ that responds positively to #any?) if the method name is one
+  you're interested in, and either an empty Array (or at least _something_ that
+  responds negatively to #any?) or something falsey (i.e., false or nil)
+  otherwise.  If you are not comfortable making lambdas, feel free to copy the
+  lambda_maker method in the tests.
 
 * The block will be called when the lambda indicates that a method of interest
   has been called.  The block will receive three arguments: the original object
