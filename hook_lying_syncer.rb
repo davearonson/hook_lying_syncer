@@ -3,9 +3,10 @@ class HookLyingSyncer
   # object is the object being wrapped, for purposes of endowing it with some
   # pattern of methods it should respond to.
   #
-  # matcher is a lambda that returns the matches.  if there are any, it should
-  # return an array.  if there are none, it may return an empty array, nil, or
-  # false.
+  # matcher is a lambda that returns any words of interest to the block, given
+  # the called method name.  if there are any, it should return an array.  if
+  # there are none, it may return an empty array, nil, or false, and the method
+  # name will be ass-u-me'd to be "not of interest".
   #
   # block is what you want to do with the object, the matches, and any
   # additional args given to the dynamic method.  ideally this should include
@@ -17,10 +18,9 @@ class HookLyingSyncer
     @block = block
   end
 
-  # if true, returns the matches, just for extra helpfulness :-)
-  def respond_to_missing?(sym, args)
+  def respond_to_missing?(sym, include_all=false)
     matches = find_matches(sym)
-    matches.any? ? matches : false
+    matches.any? ? true : @object.send(:respond_to?, sym, include_all)
   end
 
   def method_missing(sym, *args, &blk)
