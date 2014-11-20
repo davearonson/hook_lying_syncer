@@ -1,5 +1,12 @@
 require './hook_lying_syncer'
 
+def lambda_maker(prefix, separator, suffix=nil)
+  lambda { |method_name|
+    matches = /\A#{prefix}(\w+)#{suffix}\Z/.match(method_name)
+    matches[1].split(separator) if matches
+  }
+end
+
 class Person
   attr_reader :name
   def initialize(name)
@@ -34,10 +41,7 @@ describe HookLyingSyncer do
 
     before do
       @person = Person.new("Dave")
-      kinds_getter = ->(sym) {
-        matches = /\Afind_(\w+)_widgets\Z/.match(sym)
-        matches[1].split("_") if matches
-      }
+      kinds_getter = lambda_maker("find_", "_", "_widgets")
       @syncer = HookLyingSyncer.new(@person, kinds_getter) do |p, kinds, *args|
         addons = args.any? ? ", with #{args.join(" and ")}" : nil
         "#{p.name} wants #{kinds.join(" ")} widgets#{addons}"
@@ -108,13 +112,10 @@ describe HookLyingSyncer do
     describe "with multiple levels" do
 
       before do
-        name_getter = ->(sym) {
-          matches = /\Asay_to_(\w+)\Z/.match(sym)
-          matches[1].split("_and_").map(&:capitalize) if matches
-        }
+        name_getter = lambda_maker("say_to_", "_and_")
         @inner = @syncer
         @outer = HookLyingSyncer.new(@inner, name_getter) do |inner, names, *args|
-          "#{inner.name} says \"#{args.join("\" and \"")}\" to #{names.join(" and ")}"
+          "#{inner.name} says \"#{args.join("\" and \"")}\" to #{names.map(&:capitalize).join(" and ")}"
         end
       end
 
@@ -165,10 +166,7 @@ describe HookLyingSyncer do
   describe "can wrap classes too" do
 
     before do
-      wants_getter = ->(sym) {
-        matches = /\Afind_by_(\w+)\Z/.match(sym)
-        matches[1].split("_and_") if matches
-      }
+      wants_getter = lambda_maker("find_by_", "_and_")
       @syncer = HookLyingSyncer.new(Person, wants_getter) do |c, wants, *args|
         if wants.length != args.length
           raise "#{wants.length} qualities but #{args.length} values"
@@ -189,10 +187,7 @@ describe HookLyingSyncer do
     describe "wrapping an already wrapped class" do
 
       before do
-        needs_getter = ->(sym) {
-          matches = /\Aneed_with_(\w+)\Z/.match(sym)
-          matches[1].split("_and_") if matches
-        }
+        needs_getter = lambda_maker("need_with_", "_and_")
         @outer = HookLyingSyncer.new(@syncer, needs_getter) do |c, wants, *args|
           c.need wants.zip(args).to_h
         end
