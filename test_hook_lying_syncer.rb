@@ -5,132 +5,211 @@ class Person
   def initialize(name)
     @name = name
   end
+  def self.find(params)
+    self.seek("Looking for", params)
+  end
+  def self.need(params)
+    self.seek("I need", params)
+  end
+  def self.what_are_they
+    "Are we not men?  We are Devo!  D-E-V-O!"
+  end
+  private
+  def self.seek(look_how, params)
+    wants = [].tap { |list| params.each { |key, val| list << "#{val} #{key}" } }
+
+    # there's got to be some way to do this more cleanly...
+    # wouldn't be surprised if Rails has something like Array#sentencize....
+    wants[-1] = "and #{wants[-1]}" if wants.length > 1
+    separator = wants.length > 2 ? ", " : " "
+    description = wants.join(separator)
+
+    "#{look_how} a person with #{ description }"
+  end
 end
 
 describe HookLyingSyncer do
 
-  before do
-    @person = Person.new("Dave")
-    kinds_getter = ->(sym) {
-      matches = /\Afind_(\w+)_widgets\Z/.match(sym)
-      matches[1].split("_") if matches
-    }
-    @syncer = HookLyingSyncer.new(@person, kinds_getter) do |p, kinds, *args|
-      addons = args.any? ? ", with #{args.join(" and ")}" : nil
-      "#{p.name} wants #{kinds.join(" ")} widgets#{addons}"
-    end
-  end
-
-  describe "respond_to_missing?" do
-
-    it "can handle dynamically defined methods" do
-      expect(@syncer.respond_to? :find_green_widgets).to equal true
-    end
-
-    it "can handle the original object's methods" do
-      expect(@syncer.respond_to? :name).to equal true
-    end
-
-    it "still rejects unknown methods" do
-      expect(@syncer.respond_to? :blargh).to equal false
-    end
-
-  end
-
-  describe "method_missing" do
-
-    describe "can handle dynamically defined methods" do
-
-      it "with no args" do
-        expect(@syncer.find_green_widgets).to eql "Dave wants green widgets"
-      end
-
-      it "with an arg" do
-        expect(@syncer.find_green_widgets(:stripes)).to eql(
-          "Dave wants green widgets, with stripes")
-      end
-
-      it "with multiple args" do
-        expect(@syncer.find_green_widgets(:stripes, :spots)).to eql(
-          "Dave wants green widgets, with stripes and spots")
-      end
-
-      it "with multiple subparts" do
-        expect(@syncer.find_big_green_widgets).to eql(
-          "Dave wants big green widgets")
-      end
-
-    end
-
-    describe "can handle the object's original methods" do
-
-      it "using the original object" do
-        expect(@syncer.name).to eql "Dave"
-      end
-
-      it "even if the object-pointing var is changed" do
-        @person = Person.new("Chris")
-        expect(@person.name).to eql "Chris" # just a sanity check
-        expect(@syncer.name).to eql "Dave"
-      end
-
-    end
-
-    it "doesn't prevent blowup on totally unkown methods" do
-      expect { @syncer.blarg }.to raise_error NoMethodError
-    end
-
-  end
-
-  describe "with multiple levels" do
+  describe "on instances" do
 
     before do
-      name_getter = ->(sym) {
-        matches = /\Asay_to_(\w+)\Z/.match(sym)
-        matches[1].split("_and_").map(&:capitalize) if matches
+      @person = Person.new("Dave")
+      kinds_getter = ->(sym) {
+        matches = /\Afind_(\w+)_widgets\Z/.match(sym)
+        matches[1].split("_") if matches
       }
-      @inner = @syncer
-      @outer = HookLyingSyncer.new(@inner, name_getter) do |inner, names, *args|
-        "#{inner.name} says \"#{args.join("\" and \"")}\" to #{names.join(" and ")}"
+      @syncer = HookLyingSyncer.new(@person, kinds_getter) do |p, kinds, *args|
+        addons = args.any? ? ", with #{args.join(" and ")}" : nil
+        "#{p.name} wants #{kinds.join(" ")} widgets#{addons}"
       end
     end
 
     describe "respond_to_missing?" do
 
       it "can handle dynamically defined methods" do
-        expect(@person.respond_to? :say_to_fred).to equal false
-        expect(@inner.respond_to? :say_to_fred).to equal false
-        expect(@outer.respond_to? :say_to_fred).to equal true
+        expect(@syncer.respond_to? :find_green_widgets).to equal true
       end
 
       it "can handle the original object's methods" do
-        expect(@outer.respond_to? :name).to equal true
+        expect(@syncer.respond_to? :name).to equal true
       end
 
       it "still rejects unknown methods" do
-        expect(@outer.respond_to? :blargh).to equal false
+        expect(@syncer.respond_to? :blargh).to equal false
       end
 
     end
 
     describe "method_missing" do
 
-      it "can handle dynamically defined methods" do
-        expect(@outer.say_to_fred_and_ethel("hail", "well met")).to eql(
-          "Dave says \"hail\" and \"well met\" to Fred and Ethel")
+      describe "can handle dynamically defined methods" do
+
+        it "with no args" do
+          expect(@syncer.find_green_widgets).to eql "Dave wants green widgets"
+        end
+
+        it "with an arg" do
+          expect(@syncer.find_green_widgets(:stripes)).to eql(
+            "Dave wants green widgets, with stripes")
+        end
+
+        it "with multiple args" do
+          expect(@syncer.find_green_widgets(:stripes, :spots)).to eql(
+            "Dave wants green widgets, with stripes and spots")
+        end
+
+        it "with multiple subparts" do
+          expect(@syncer.find_big_green_widgets).to eql(
+            "Dave wants big green widgets")
+        end
+
       end
 
-      it "can handle the inner object's methods" do
-        expect(@outer.name).to eql "Dave"
+      describe "can handle the object's original methods" do
+
+        it "using the original object" do
+          expect(@syncer.name).to eql "Dave"
+        end
+
+        it "even if the object-pointing var is changed" do
+          @person = Person.new("Chris")
+          expect(@person.name).to eql "Chris" # just a sanity check
+          expect(@syncer.name).to eql "Dave"
+        end
+
       end
 
-      it "can handle the inner syncer's methods" do
-        expect(@outer.find_big_green_widgets(:stripes, :spots)).to eql(
-          "Dave wants big green widgets, with stripes and spots")
+      it "doesn't prevent blowup on totally unknown methods" do
+        expect { @syncer.blarg }.to raise_error NoMethodError
       end
 
-      it "still barfs on unknown methods" do
-        expect { @outer.blarg }.to raise_error NoMethodError
+    end
+
+    describe "with multiple levels" do
+
+      before do
+        name_getter = ->(sym) {
+          matches = /\Asay_to_(\w+)\Z/.match(sym)
+          matches[1].split("_and_").map(&:capitalize) if matches
+        }
+        @inner = @syncer
+        @outer = HookLyingSyncer.new(@inner, name_getter) do |inner, names, *args|
+          "#{inner.name} says \"#{args.join("\" and \"")}\" to #{names.join(" and ")}"
+        end
+      end
+
+      describe "respond_to_missing?" do
+
+        it "can handle dynamically defined methods" do
+          expect(@person.respond_to? :say_to_fred).to equal false
+          expect(@inner.respond_to? :say_to_fred).to equal false
+          expect(@outer.respond_to? :say_to_fred).to equal true
+        end
+
+        it "can handle the original object's methods" do
+          expect(@outer.respond_to? :name).to equal true
+        end
+
+        it "still rejects unknown methods" do
+          expect(@outer.respond_to? :blargh).to equal false
+        end
+
+      end
+
+      describe "method_missing" do
+
+        it "can handle dynamically defined methods" do
+          expect(@outer.say_to_fred_and_ethel("hail", "well met")).to eql(
+            "Dave says \"hail\" and \"well met\" to Fred and Ethel")
+        end
+
+        it "can handle the inner object's methods" do
+          expect(@outer.name).to eql "Dave"
+        end
+
+        it "can handle the inner syncer's methods" do
+          expect(@outer.find_big_green_widgets(:stripes, :spots)).to eql(
+            "Dave wants big green widgets, with stripes and spots")
+        end
+
+        it "still barfs on unknown methods" do
+          expect { @outer.blarg }.to raise_error NoMethodError
+        end
+
+      end
+
+    end
+
+  end
+
+  describe "can wrap classes too" do
+
+    before do
+      wants_getter = ->(sym) {
+        matches = /\Afind_by_(\w+)\Z/.match(sym)
+        matches[1].split("_and_") if matches
+      }
+      @syncer = HookLyingSyncer.new(Person, wants_getter) do |c, wants, *args|
+        if wants.length != args.length
+          raise "#{wants.length} qualities but #{args.length} values"
+        end
+        c.find wants.zip(args).to_h
+      end
+    end
+
+    it "still receives method-name-parts and args" do
+      expect(@syncer.find_by_eyes_and_hair_and_skin(:red, :blue, :green)).to eql(
+        "Looking for a person with red eyes, blue hair, and green skin")
+    end
+
+    it "can still call the class's methods" do
+      expect(@syncer.what_are_they).to eql Person.what_are_they
+    end
+
+    describe "wrapping an already wrapped class" do
+
+      before do
+        needs_getter = ->(sym) {
+          matches = /\Aneed_with_(\w+)\Z/.match(sym)
+          matches[1].split("_and_") if matches
+        }
+        @outer = HookLyingSyncer.new(@syncer, needs_getter) do |c, wants, *args|
+          c.need wants.zip(args).to_h
+        end
+      end
+
+      it "can call the new thing" do
+        expect(@outer.need_with_eyes_and_hair(:red, :blue)).to eql(
+          "I need a person with red eyes and blue hair")
+      end
+
+      it "can still call the old thing" do
+        expect(@outer.find_by_eyes_and_hair(:red, :blue)).to eql(
+          "Looking for a person with red eyes and blue hair")
+      end
+
+      it "can still call the class's methods" do
+        expect(@syncer.what_are_they).to eql Person.what_are_they
       end
 
     end
