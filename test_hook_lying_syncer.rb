@@ -107,6 +107,24 @@ describe HookLyingSyncer do
         expect { @syncer.blarg }.to raise_error NoMethodError
       end
 
+      it "can add methods" do
+        method_matcher = lambda { |name| name == :foo ? [name] : nil }
+        syncer = HookLyingSyncer.new(@person, method_matcher) do |p, wants, *args|
+          def foo
+            :foo
+          end
+        end
+        expect(syncer.foo).to equal :foo
+      end
+
+      it "can override methods" do
+        method_matcher = lambda { |name| name == :name ? [name] : nil }
+        syncer = HookLyingSyncer.new(@person, method_matcher) do |p, wants, *args|
+          p.name.reverse.capitalize
+        end
+        expect(syncer.name).to eql "Evad"
+      end
+
     end
 
     describe "with multiple levels" do
@@ -163,7 +181,7 @@ describe HookLyingSyncer do
 
   end
 
-  describe "can wrap classes too" do
+  describe "can wrap classes" do
 
     before do
       wants_getter = lambda_maker("find_by_", "_and_")
@@ -175,9 +193,48 @@ describe HookLyingSyncer do
       end
     end
 
-    it "still receives method-name-parts and args" do
+    it "and receive method-name-parts and args" do
       expect(@syncer.find_by_eyes_and_hair_and_skin(:red, :blue, :green)).to eql(
         "Looking for a person with red eyes, blue hair, and green skin")
+    end
+
+    it "to override class methods" do
+      method_matcher = lambda { |name| name == :what_are_they ? [name] : nil }
+      what_they_are = "three little maids from school"
+      syncer = HookLyingSyncer.new(Person, method_matcher) do |c, wants, *args|
+        what_they_are
+      end
+      expect(syncer.what_are_they).to eql what_they_are
+    end
+
+    it "to add class methods" do
+      method_matcher = lambda { |name| name == :foo ? [name] : nil }
+      syncer = HookLyingSyncer.new(Person, method_matcher) do |c, wants, *args|
+        def c.foo
+          :foo
+        end
+      end
+      expect(syncer.foo).to equal :foo
+    end
+
+    it "to override the class's .new method" do
+      method_matcher = lambda { |name| name == :new ? [name] : nil }
+      syncer = HookLyingSyncer.new(Person, method_matcher) do |c, wants, *args|
+        c.new(args[0].reverse.capitalize)
+      end
+      expect(syncer.new("Dave").name).to eql "Evad"
+    end
+
+    it "to add instance methods" do
+      method_matcher = lambda { |name| name == :new ? [name] : nil }
+      syncer = HookLyingSyncer.new(Person, method_matcher) do |c, wants, *args|
+        c.new(args).tap { |obj|
+          def obj.foo
+            :foo
+          end
+        }
+      end
+      expect(syncer.new("Dave").foo).to equal :foo
     end
 
     it "can still call the class's methods" do
