@@ -18,6 +18,8 @@ class HookLyingSyncer
     @block = block
   end
 
+  private
+
   def respond_to_missing?(sym, include_all=false)
     matches = find_matches(sym)
     matches.any? ? true : @object.send(:respond_to?, sym, include_all)
@@ -31,8 +33,6 @@ class HookLyingSyncer
       @object.send(sym, *args, &blk)
     end
   end
-
-  private
 
   def find_matches(sym)
     result = @matcher.call(sym)
