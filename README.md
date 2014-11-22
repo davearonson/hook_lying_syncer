@@ -28,10 +28,9 @@ method name into the subparts of interest, and a block to execute when there's
 a match.
 
 * The "something to wrap" can be any object, even a class.  Note however that
-  if you wrap a class, that will not affect its instances!  I think you _might_
-  be able to affect future instances by using a wrapper to override .new -- I
-  will try that larer.  If you need to affect _extant_ instances, you have to
-  wrap them yourself.
+  if you wrap a class, that will not affect its instances!  You can affect
+  future instances by using a wrapper to override .new, but if you need to
+  affect _extant_ instances, you have to wrap them yourself.
 
 * The lambda must return an Array with some truthy content (or at least
   _something_ that responds positively to #any?) if the method name is one
