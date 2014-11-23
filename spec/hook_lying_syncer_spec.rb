@@ -1,4 +1,4 @@
-require './hook_lying_syncer'
+require 'hook_lying_syncer'
 
 def lambda_maker(prefix, separator, suffix=nil)
   lambda { |method_name|

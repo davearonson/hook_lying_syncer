@@ -1,3 +1,5 @@
+require "hook_lying_syncer/version"
+
 class HookLyingSyncer
 
   # object is the object being wrapped, for purposes of endowing it with some

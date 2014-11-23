@@ -4,8 +4,11 @@ hook_lying_syncer
 This project presents a way for Ruby coders to keep method_missing and
 respond_to_missing? in sync.
 
-The whole idea of finding a way to do that automagically was originally
-inspired by [Avdi Grimm](http://about.avdi.org/)'s [blog
+## Background
+
+The whole idea of finding a way to automagically keep method_missing and
+respond_to_missing? in sync, was originally inspired by [Avdi
+Grimm](http://about.avdi.org/)'s [blog
 post](http://devblog.avdi.org/2011/12/07/defining-method_missing-and-respond_to-at-the-same-time/)
 about the need to sync them.  I came up with a quick and dirty hack, and a
 still-hacky improvement that seems to have been mangled by a blog platform
@@ -20,8 +23,25 @@ I got some suggestions and other help from [Chris
 Hoffman](https://github.com/yarmiganosca), mainly in figuring out that I
 shouldn't do the in-block object access the way I was trying to!  :-)
 
-Usage
------
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'hook_lying_syncer'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install hook_lying_syncer
+
+
+
+## Usage
 
 Create a HookLyingSyncer by passing it something to wrap, a lambda to turn the
 method name into the subparts of interest, and a block to execute when there's
@@ -46,8 +66,15 @@ a match.
 
 See the tests for examples.
 
-Status
------
+## Status
 
 I have barely begun to work on this repo, so it's still a bit rough, as a
 project per se.  My plan is to turn it into a gem.
+
+## Contributing
+
+1. Fork it ( https://github.com/davearonson/hook_lying_syncer/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new Pull Request
