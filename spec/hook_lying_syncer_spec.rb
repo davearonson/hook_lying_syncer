@@ -75,9 +75,7 @@ describe HookLyingSyncer do
       it "can add methods" do
         method_matcher = lambda { |name| name == :foo ? [name] : nil }
         syncer = HookLyingSyncer.new(@person, method_matcher) do |p, wants, *args|
-          def foo
-            :foo
-          end
+          :foo
         end
         expect(syncer.foo).to equal :foo
       end
@@ -176,9 +174,7 @@ describe HookLyingSyncer do
     it "to add class methods" do
       method_matcher = lambda { |name| name == :foo ? [name] : nil }
       syncer = HookLyingSyncer.new(Person, method_matcher) do |c, wants, *args|
-        def c.foo
-          :foo
-        end
+        :foo
       end
       expect(syncer.foo).to equal :foo
     end
