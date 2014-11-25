@@ -1,40 +1,5 @@
 require 'hook_lying_syncer'
 
-def lambda_maker(prefix, separator, suffix=nil)
-  lambda { |method_name|
-    matches = /\A#{prefix}(\w+)#{suffix}\Z/.match(method_name)
-    matches[1].split(separator) if matches
-  }
-end
-
-class Person
-  attr_reader :name
-  def initialize(name)
-    @name = name
-  end
-  def self.find(params)
-    self.seek("Looking for", params)
-  end
-  def self.need(params)
-    self.seek("I need", params)
-  end
-  def self.what_are_they
-    "Are we not men?  We are Devo!  D-E-V-O!"
-  end
-  private
-  def self.seek(look_how, params)
-    wants = [].tap { |list| params.each { |key, val| list << "#{val} #{key}" } }
-
-    # there's got to be some way to do this more cleanly...
-    # wouldn't be surprised if Rails has something like Array#sentencize....
-    wants[-1] = "and #{wants[-1]}" if wants.length > 1
-    separator = wants.length > 2 ? ", " : " "
-    description = wants.join(separator)
-
-    "#{look_how} a person with #{ description }"
-  end
-end
-
 describe HookLyingSyncer do
 
   describe "on instances" do
@@ -189,7 +154,8 @@ describe HookLyingSyncer do
         if wants.length != args.length
           raise "#{wants.length} qualities but #{args.length} values"
         end
-        c.find wants.zip(args).to_h
+        # can't use to_h prior to ruby 2.0
+        c.find to_hash_kluge(wants.zip(args))
       end
     end
 
@@ -246,7 +212,8 @@ describe HookLyingSyncer do
       before do
         needs_getter = lambda_maker("need_with_", "_and_")
         @outer = HookLyingSyncer.new(@syncer, needs_getter) do |c, wants, *args|
-          c.need wants.zip(args).to_h
+          # can't use to_h prior to ruby 2.0
+          c.need to_hash_kluge(wants.zip(args))
         end
       end
 
@@ -268,4 +235,57 @@ describe HookLyingSyncer do
 
   end
 
+end
+
+private
+
+def lambda_maker(prefix, separator, suffix=nil)
+  lambda { |method_name|
+    matches = /\A#{prefix}(\w+)#{suffix}\Z/.match(method_name)
+    matches[1].split(separator) if matches
+  }
+end
+
+class Person
+
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+
+  def self.find(params)
+    self.seek("Looking for", params)
+  end
+
+  def self.need(params)
+    self.seek("I need", params)
+  end
+
+  def self.what_are_they
+    "Are we not men?  We are Devo!  D-E-V-O!"
+  end
+
+  private
+
+  def self.seek(look_how, params)
+    wants = [].tap { |list| params.each { |key, val| list << "#{val} #{key}" } }
+
+    # there's got to be some way to do this more cleanly...
+    # wouldn't be surprised if Rails has something like Array#sentencize....
+    wants[-1] = "and #{wants[-1]}" if wants.length > 1
+    separator = wants.length > 2 ? ", " : " "
+    description = wants.join(separator)
+
+    "#{look_how} a person with #{ description }"
+  end
+
+end
+
+# since we can't use .to_h prior to ruby 2.0,
+# and we want this gem to be usable w/ 1.8 and 1.9
+def to_hash_kluge(ary)
+  hash = {}
+  ary.each { |pair| hash[pair.first] = pair.last }
+  hash
 end
