@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Dave Aronson"]
   spec.email         = ["hook_lying_syncer_gemspec.2.TRex@Codosaur.us"]
   spec.summary       = %q{Keeps method_missing and respond_to_missing? in sync.}
-  spec.description   = %q{Provides a decorator class you can wrap objects in (even classes!) to keep method_missing and respond_to_missing? in sync.}
+  spec.description   = %q{Provides a decorator class you can wrap objects in (even classes!) to keep method_missing and respond_to_missing? in sync.  Requires Ruby 1.9 or later; see README for details.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

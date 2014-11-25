@@ -31,7 +31,10 @@ shouldn't do the in-block object access the way I was trying to!  :-)
 
 This requires the Ruby version to be at least 1.9.  Eventually I might put some
 work into figuring out why many tests fail with 1.8, but for now, call it a
-Ruby 1.9+ gem.
+Ruby 1.9+ gem.  Check [its Travis CI status
+page](https://travis-ci.org/davearonson/hook_lying_syncer) to see which
+versions of Ruby it has been tested against; currently that's 1.9.2, 1.9.3,
+2.0.0, 2.1.0, 2.1.1, 2.1.2, JRuby in 1.9 mode, and Rubinius 2.1.1.
 
 
 ## Installation
