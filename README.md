@@ -26,6 +26,14 @@ I got some suggestions and other help from [Chris
 Hoffman](https://github.com/yarmiganosca), mainly in figuring out that I
 shouldn't do the in-block object access the way I was trying to!  :-)
 
+
+## Caveats
+
+This requires the Ruby version to be at least 1.9.  Eventually I might put some
+work into figuring out why many tests fail with 1.8, but for now, call it a
+Ruby 1.9+ gem.
+
+
 ## Installation
 
 Add this line to your application's Gemfile:
