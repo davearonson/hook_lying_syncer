@@ -237,7 +237,7 @@ private
 
 def lambda_maker(prefix, separator, suffix=nil)
   lambda { |method_name|
-    matches = /\A#{prefix}(\w+)#{suffix}\Z/.match(method_name)
+    matches = /\A#{prefix}(\w+)#{suffix}\Z/.match(method_name.to_s)
     matches[1].split(separator) if matches
   }
 end
