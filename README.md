@@ -80,10 +80,14 @@ a match.
 
 See the tests for examples.
 
-## Status
 
-I have barely begun to work on this repo, so it's still a bit rough, as a
-project per se.  My plan is to turn it into a gem.
+## Changes
+
+| Version | Change |
+|---|---|
+| 0.0.1 | Initial release |
+| 0.0.2 | Better compatibility w/ 1.9; declare 1.8 incompatible |
+
 
 ## Contributing
 
