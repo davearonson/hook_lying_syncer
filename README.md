@@ -88,6 +88,7 @@ See the tests for examples.
 | 0.0.1 | Initial release |
 | 0.0.2 | Better compatibility w/ 1.9; declare 1.8 incompatible in README |
 | 0.0.3 | Declare 1.8 incompatible in gemspec (duh!) |
+| 0.0.4 | Fix poorly written dependency versions in gemspec |
 
 
 ## Contributing

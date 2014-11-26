@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   # no version numbers 'cuz they're only dev dependencies and having too-high
   # numbers could make dependency resolution impossible for older rubies
-  spec.add_development_dependency "bundler", "~> 0"
-  spec.add_development_dependency "rake", "~> 0"
-  spec.add_development_dependency "rspec", "~> 0"
+  spec.add_development_dependency "bundler", ">= 0"
+  spec.add_development_dependency "rake", ">= 0"
+  spec.add_development_dependency "rspec", ">= 0"
 end
