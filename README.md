@@ -86,7 +86,8 @@ See the tests for examples.
 | Version | Change |
 |---|---|
 | 0.0.1 | Initial release |
-| 0.0.2 | Better compatibility w/ 1.9; declare 1.8 incompatible |
+| 0.0.2 | Better compatibility w/ 1.9; declare 1.8 incompatible in README |
+| 0.0.3 | Declare 1.8 incompatible in gemspec (duh!) |
 
 
 ## Contributing
