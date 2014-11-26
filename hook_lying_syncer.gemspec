@@ -1,7 +1,7 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'hook_lying_syncer/version'
+require "hook_lying_syncer/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "hook_lying_syncer"
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   # no version numbers 'cuz they're only dev dependencies and having too-high
   # numbers could make dependency resolution impossible for older rubies
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"  
+  spec.add_development_dependency "bundler", "~> 0"
+  spec.add_development_dependency "rake", "~> 0"
+  spec.add_development_dependency "rspec", "~> 0"
 end
