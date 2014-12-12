@@ -4,13 +4,13 @@ hook_lying_syncer
 [![Code Climate](https://codeclimate.com/github/davearonson/hook_lying_syncer/badges/gpa.svg)](https://codeclimate.com/github/davearonson/hook_lying_syncer)
 [![Build Status](https://travis-ci.org/davearonson/hook_lying_syncer.png)](https://travis-ci.org/davearonson/hook_lying_syncer)
 
-This project presents a way for Ruby coders to keep method_missing and
-respond_to_missing? in sync.
+This project presents a way for Ruby coders to keep ```method_missing``` and
+```respond_to_missing?``` in sync.
 
 ## Background
 
-The whole idea of finding a way to automagically keep method_missing and
-respond_to_missing? in sync, was originally inspired by [Avdi
+The whole idea of finding a way to automagically keep ```method_missing``` and
+```respond_to_missing?``` in sync, was originally inspired by [Avdi
 Grimm](http://about.avdi.org/)'s [blog
 post](http://devblog.avdi.org/2011/12/07/defining-method_missing-and-respond_to-at-the-same-time/)
 about the need to sync them.  I came up with a quick and dirty hack, and a
@@ -57,9 +57,9 @@ Or install it yourself as:
 
 ## Usage
 
-Create a HookLyingSyncer by passing it something to wrap, a lambda to turn the
-method name into the subparts of interest, and a block to execute when there's
-a match.
+Create a HookLyingSyncer by passing it something to wrap, a lambda to extract
+the the subparts of interest from a method name (passed to ```method_missing```
+or ```respond_to_missing?```), and a block to execute when there are matches.
 
 * The "something to wrap" can be any object, even a class.  Note however that
   if you wrap a class, that will not affect its instances!  You can affect
@@ -79,6 +79,10 @@ a match.
   of arguments (if any) passed in the method call.
 
 See the tests for examples.
+
+Also, please remember, just because you *can* use this, doesn't mean you
+*should*!  Ask your doctor if metaprogramming is right for you.  Side effects
+may include difficulty debugging and loss of greppability.
 
 
 ## Changes
