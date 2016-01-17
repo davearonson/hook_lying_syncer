@@ -2,6 +2,7 @@ hook_lying_syncer
 =================
 
 [![Code Climate](https://codeclimate.com/github/davearonson/hook_lying_syncer/badges/gpa.svg)](https://codeclimate.com/github/davearonson/hook_lying_syncer)
+[![Test Coverage](https://codeclimate.com/github/davearonson/hook_lying_syncer/badges/coverage.svg)](https://codeclimate.com/github/davearonson/hook_lying_syncer/coverage)
 [![Build Status](https://travis-ci.org/davearonson/hook_lying_syncer.png)](https://travis-ci.org/davearonson/hook_lying_syncer)
 
 This project presents a way for Ruby coders to keep ```method_missing``` and
